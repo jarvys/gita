@@ -8,7 +8,17 @@ var args = require('minimist')(process.argv.slice(2), {
     }
 });
 
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test');
+var User = mongoose.model('User', {
+    userId: String
+});
+
 var everyauth = require('everyauth');
+everyauth.everymodule.findUserById(function(userId, callback) {
+    User.findById(userId, callback);
+});
+
 var express = require('express');
 var cookieParser = require('cookie-parser')
 var session = require('express-session');
@@ -20,6 +30,8 @@ app.use(morgan('dev'))
     .use(cookieParser('Hello'))
     .use(session('World'))
     .use(everyauth.middleware(app));
+
+
 
 app.engine('jade', require('jade').__express);
 
